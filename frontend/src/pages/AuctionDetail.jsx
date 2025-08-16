@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
 
 export default function AuctionDetail() {
   const { id } = useParams();
@@ -40,80 +41,104 @@ export default function AuctionDetail() {
       socket.off("new_bid");
       socket.disconnect();
     };
-    // eslint-disable-next-line
   }, [id]);
 
   if (!auction)
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <p className="text-gray-600">Loading auction details...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gray-900">
+        <p className="text-gray-400">Loading auction details...</p>
       </div>
     );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-6">
-      <Card className="w-full max-w-lg rounded-2xl shadow-xl border border-indigo-200 bg-white/90 backdrop-blur">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-indigo-700">
-            {auction.title}
-          </CardTitle>
-          <p className="text-gray-600 text-sm">{auction.description}</p>
-        </CardHeader>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 p-6 relative overflow-hidden">
+      {/* Animated cosmic glows */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.1 }}
+        transition={{ duration: 4, repeat: Infinity, repeatType: "reverse" }}
+        className="absolute inset-0 bg-[radial-gradient(circle,_rgba(255,255,255,0.15),_transparent_70%)] animate-pulse"
+      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.1 }}
+        transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
+        className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(0,255,255,0.15),_transparent_70%)] animate-pulse"
+      />
 
-        <CardContent className="space-y-4">
-          {/* Auction Status */}
-          <div className="flex justify-between items-center">
-            <span className="font-medium text-gray-700">Status:</span>
-            <Badge
-              variant={
-                auction.status === "live"
-                  ? "default"
-                  : auction.status === "upcoming"
-                  ? "secondary"
-                  : "destructive"
-              }
-              className="capitalize"
-            >
-              {auction.status}
-            </Badge>
-          </div>
+      {/* Auction Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-lg relative z-10"
+      >
+        <Card className="rounded-3xl shadow-2xl border border-indigo-500 bg-gray-900/70 backdrop-blur-2xl hover:shadow-indigo-500/50 transition">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-extrabold text-indigo-400 drop-shadow-lg">
+              {auction.title}
+            </CardTitle>
+            <p className="text-gray-300 text-sm mt-1">{auction.description}</p>
+          </CardHeader>
 
-          {/* Current Bid */}
-          <div className="flex justify-between items-center text-lg">
-            <span className="font-semibold text-gray-800">Current Bid:</span>
-            <span className="font-bold text-indigo-700 text-xl">
-              ₹{current || auction.start_price}
-            </span>
-          </div>
-
-          {/* Place a Bid */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">Your Bid</label>
-            <div className="flex gap-2 mt-1">
-              <Input
-                type="number"
-                placeholder="Enter amount"
-                value={myBid}
-                onChange={(e) => setMyBid(e.target.value)}
-              />
-              <Button
-                onClick={placeBid}
-                disabled={!myBid}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md"
+          <CardContent className="space-y-4">
+            {/* Auction Status */}
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-300">Status:</span>
+              <Badge
+                variant={
+                  auction.status === "live"
+                    ? "default"
+                    : auction.status === "upcoming"
+                    ? "secondary"
+                    : "destructive"
+                }
+                className="capitalize px-3 py-1 text-sm bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg"
               >
-                Place Bid
-              </Button>
+                {auction.status}
+              </Badge>
             </div>
-          </div>
-        </CardContent>
 
-        <CardFooter className="text-center text-sm text-gray-500">
-          Auction ends:{" "}
-          <span className="font-medium text-gray-700">
-            {new Date(auction.end_time).toLocaleString()}
-          </span>
-        </CardFooter>
-      </Card>
+            {/* Current Bid */}
+            <div className="flex justify-between items-center text-lg">
+              <span className="font-semibold text-gray-300">Current Bid:</span>
+              <span className="font-bold text-indigo-400 text-2xl drop-shadow-lg">
+                ₹{current || auction.start_price}
+              </span>
+            </div>
+
+            {/* Place a Bid */}
+            <div>
+              <label className="text-sm font-medium text-gray-300">Your Bid</label>
+              <div className="flex gap-2 mt-1">
+                <Input
+                  type="number"
+                  placeholder="Enter amount"
+                  value={myBid}
+                  onChange={(e) => setMyBid(e.target.value)}
+                  className="bg-gray-800/70 border-indigo-600 text-white placeholder-gray-400 focus:ring-indigo-500"
+                />
+                <motion.div whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,0,255,0.6)" }}>
+                  <Button
+                    onClick={placeBid}
+                    disabled={!myBid}
+                    className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white shadow-lg rounded-xl"
+                  >
+                    Place Bid
+                  </Button>
+                </motion.div>
+              </div>
+            </div>
+          </CardContent>
+
+          <CardFooter className="text-center text-sm text-gray-400">
+            Auction ends:{" "}
+            <span className="font-medium text-gray-300">
+              {new Date(auction.end_time).toLocaleString()}
+            </span>
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 }
